@@ -17,7 +17,7 @@ public class ActionDarAlta implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		paraUI.agregarCliente();
-		
+		paraUI.añadirPersonaAlCombo();
 	}
 
 }

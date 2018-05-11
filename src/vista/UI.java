@@ -22,9 +22,6 @@ public class UI extends JFrame {
 	protected JComboBox<String> comboBox;
 	protected JTextField textoDireccion;
 
-	/**
-	 * Create the frame.
-	 */
 	public UI() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);

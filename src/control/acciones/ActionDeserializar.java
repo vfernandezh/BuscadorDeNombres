@@ -1,11 +1,14 @@
 package control.acciones;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
+import javax.swing.JComboBox;
 
 import control.ParaUI;
+import modelo.Persona;
 
-public class ActionDeserializar implements ActionListener{
+public class ActionDeserializar implements ItemListener{
 private ParaUI paraUI;
 	
 
@@ -13,12 +16,9 @@ private ParaUI paraUI;
 		this.paraUI = paraUI;
 	}
 
-
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		paraUI.deserializarPersona();
-		paraUI.visualizarDireccion();
-		paraUI.getTextoDireccion().setText("por fin");
-		
+	public void itemStateChanged(ItemEvent e) {
+		this.paraUI.visualizarDireccion((Persona)this.paraUI.deserializar(((JComboBox) e.getSource()).getSelectedIndex()));
 	}
+	
 }

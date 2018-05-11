@@ -1,84 +1,92 @@
 package control;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-
-import javax.swing.ComboBoxModel;
-import javax.swing.DefaultComboBoxModel;
 import control.acciones.ActionDarAlta;
 import control.acciones.ActionDeserializar;
+import modelo.MyObjectOutputStream;
 import modelo.Persona;
 import vista.UI;
 
 public class ParaUI extends UI {
 	
-	public ArrayList<Persona> personas;
+	private String path = "archivoDeGuardado.data";
+	private File file = new File(path);
+	private FileInputStream flujoR = null;
+	private ObjectInputStream adaptadorR = null;
+	private FileOutputStream flujoW = null;
+	private ObjectOutputStream adaptadorW = null;
 
 	public ParaUI() {
-		this.personas = new ArrayList<>();
-		getBotonAlta().addActionListener(new ActionDarAlta(this));
-		getComboBox().addActionListener(new ActionDeserializar(this));
-
+		botonAlta.addActionListener(new ActionDarAlta(this));
+		comboBox.addItemListener(new ActionDeserializar(this));
 	}
 
 	public void agregarCliente() {
-		if (!comprobarCampos())
-			personas.add(new Persona(getNombre().getText(), getDireccion().getText()));
-		añadirPersonaAlCombo();
-		serializarPersona();
-
-	}
-
-	private void serializarPersona() {
-
-		ObjectOutputStream escribirFichero;
-		try {
-			escribirFichero = new ObjectOutputStream(new FileOutputStream("AlmacenDeClientes.dat"));
-			escribirFichero.writeObject(this.personas);
-			escribirFichero.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (comprobarCampos()) {
+			serializar(new Persona(getNombre().getText(), getDireccion().getText()));
 		}
-
 	}
 
-	public void deserializarPersona() {
+	public boolean serializar(Object obj) {
+		boolean retorno = false;
+		boolean existe = file.exists();
 		try {
-			ObjectInputStream recuperarFichero = new ObjectInputStream(new FileInputStream("AlmacenDeClientes.dat"));
-			ArrayList<Persona> personasRecuperadas = (ArrayList<Persona>) recuperarFichero.readObject();
-			this.personas = personasRecuperadas;
-			recuperarFichero.close();
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-
-	public int obtenerDireccion(String nombre) {
-		int posicion = 0;
-		for (int i = 0; i < personas.size(); i++) {
-			if (personas.get(i).getNombre() == nombre) {
-				posicion = i;
+			flujoW = new FileOutputStream(file, true);
+			if (!existe) {
+				adaptadorW = new ObjectOutputStream(flujoW);
 			}
+			else{
+				adaptadorW = new MyObjectOutputStream(flujoW);
+			}
+			adaptadorW.writeObject(obj);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		return posicion;
+		try {
+			adaptadorW.close();
+			flujoW.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return retorno;
 	}
 
-	public void visualizarDireccion() {
-		textoDireccion.setText(personas.get(obtenerDireccion(getComboBox().getSelectedItem().toString())).getDireccion());
+	public Object deserializar(int posicion) {
+
+		Object obj = null;
+		try {
+			flujoR = new FileInputStream(this.file);
+			adaptadorR = new ObjectInputStream(flujoR);
+			//como es secuencial y no se el tamano de cada objeto no me queda mas remedio que leer los anteriores
+			for (int i = 0; i < posicion; i++) {
+				obj = adaptadorR.readObject();
+				System.out.println("Leyendo...: " + ((Persona) obj).getNombre());
+			}
+			obj = adaptadorR.readObject();
+			System.out.println("Leyendo...: " + ((Persona) obj).getNombre());
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		try {
+			adaptadorR.close();
+			flujoR.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return obj;
 	}
 
-	private void añadirPersonaAlCombo() {
+	public void visualizarDireccion(Persona p) {
+		textoDireccion.setText(p.getDireccion());
+	}
+
+	public void añadirPersonaAlCombo() {
 		comboBox.addItem(nombre.getText());
 	}
 
