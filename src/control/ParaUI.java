@@ -79,6 +79,7 @@ public class ParaUI extends UI {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 		return obj;
 	}
 
@@ -93,5 +94,11 @@ public class ParaUI extends UI {
 	private boolean comprobarCampos() {
 		return !getDireccion().getText().isEmpty() && !getNombre().getText().isEmpty();
 	}
+	
+	public void inicializarCampos() {
+		nombre.setText("");
+		direccion.setText("c/");
+	}
+	
 
 }

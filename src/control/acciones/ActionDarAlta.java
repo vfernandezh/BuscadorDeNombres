@@ -18,6 +18,7 @@ public class ActionDarAlta implements ActionListener{
 	public void actionPerformed(ActionEvent arg0) {
 		paraUI.agregarCliente();
 		paraUI.añadirPersonaAlCombo();
+		paraUI.inicializarCampos();
 	}
 
 }
